@@ -108,12 +108,13 @@ class Graph {
  */
 public class Container {
 
-    private List<Bean> beans;
+    public List<Bean> beans;//TODO
 
     private String convertBeanToClassName(String name) {
+        Character c = Character.toUpperCase(name.charAt(0));
         StringBuilder className = new StringBuilder(
                 Character.toUpperCase(
-                        name.charAt(0)
+                        new String(name.charAt(0))
                 )
         );
         className.append(name.substring(1, name.length() - 5));
@@ -203,18 +204,18 @@ public class Container {
         try {
             for (Map.Entry<String, Property> mapElem : propSet) {
                 if (mapElem.getValue().getType() == ValueType.REF) {
-                    clazz.getMethod(
-                            convertToSetMethod(mapElem.getValue().getName()),
-                            paramClassType
-                    ).invoke(result, getByName(
-                            convertBeanToClassName(mapElem.getValue().getValue()))
-                    );
-                } else {
-                    fakeInt.parseInt(mapElem.getValue().getValue());
-                    clazz.getMethod(
-                            convertToSetMethod(mapElem.getValue().getName()),
-                            paramIntType
-                    ).invoke(result, fakeInt);
+                        clazz.getMethod(
+                                convertToSetMethod(mapElem.getValue().getName()),
+                                paramClassType
+                        ).invoke(result, getByName(
+                                convertBeanToClassName(mapElem.getValue().getValue()))
+                        );
+                    } else {
+                        fakeInt.parseInt(mapElem.getValue().getValue());
+                        clazz.getMethod(
+                                convertToSetMethod(mapElem.getValue().getName()),
+                                paramIntType
+                        ).invoke(result, fakeInt);
                 }
             }
         } catch (Exception ex) {
@@ -252,15 +253,17 @@ public class Container {
      */
     public Object getByName(String name) {
         Iterator<Bean> it = beans.iterator();
-        Object result = null;
+        Bean result = null;
+        String str = null;
         while (it.hasNext()) {
             Bean test = it.next();
-            if (test.getName().equals(name)) {
+            str = convertBeanToClassName(test.getName());
+            if (str.equals(name)) {
                 result = test;
                 break;
             }
         }
-        return result;
+        return getByBean(result);
     }
 
     /**

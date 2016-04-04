@@ -1,5 +1,6 @@
 package arhangel.dim.container;
 
+import arhangel.dim.container.beans.Gear;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -32,6 +33,8 @@ public class MainApp {
         } catch (Exception exception) {
             System.out.println(exception.toString());
         }
+        Gear gear = (Gear) cont.getByName("Gear");
+        //cont.beans.get(1);
         return;
     }
 }
