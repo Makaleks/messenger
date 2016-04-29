@@ -2,6 +2,7 @@ package arhangel.dim.container;
 
 import arhangel.dim.container.BeanXmlReader;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
@@ -110,15 +111,8 @@ public class Container {
 
     public List<Bean> beans;//TODO
 
-    private String convertBeanToClassName(String name) {
-        Character c = Character.toUpperCase(name.charAt(0));
-        StringBuilder className = new StringBuilder(
-                Character.toUpperCase(
-                        new String(name.charAt(0))
-                )
-        );
-        className.append(name.substring(1, name.length() - 5));
-        return className.toString();
+    private String convertBeanToName(String name) {
+        return name.substring(0, name.length() - 4);
     }
 
     private String convertValToClassName(String name) {
@@ -198,24 +192,26 @@ public class Container {
         }
 
         Set<Map.Entry<String,Property>> propSet = bean.getProperties().entrySet();
-        Integer fakeInt = new Integer(0);
         Class[] paramIntType = new Class[] { int.class };
         Class[] paramClassType = new Class[] { int.class };
         try {
             for (Map.Entry<String, Property> mapElem : propSet) {
                 if (mapElem.getValue().getType() == ValueType.REF) {
-                        clazz.getMethod(
-                                convertToSetMethod(mapElem.getValue().getName()),
-                                paramClassType
-                        ).invoke(result, getByName(
-                                convertBeanToClassName(mapElem.getValue().getValue()))
-                        );
+                    Method m = clazz.getMethod(
+                            convertToSetMethod(mapElem.getValue().getName()),
+                            paramClassType
+                    );
+                    clazz.getMethod(
+                            convertToSetMethod(mapElem.getValue().getName()),
+                            paramClassType
+                    ).invoke(result, getByName(
+                            convertBeanToName(mapElem.getValue().getValue()))
+                    );
                     } else {
-                        fakeInt.parseInt(mapElem.getValue().getValue());
                         clazz.getMethod(
                                 convertToSetMethod(mapElem.getValue().getName()),
                                 paramIntType
-                        ).invoke(result, fakeInt);
+                        ).invoke(result, Integer.parseInt(mapElem.getValue().getValue()));
                 }
             }
         } catch (Exception ex) {
@@ -243,8 +239,6 @@ public class Container {
         } catch (InvalidConfigurationException ex) {
             throw ex;
         }
-        int aa = 2;
-        aa++;
     }
 
     /**
@@ -254,11 +248,9 @@ public class Container {
     public Object getByName(String name) {
         Iterator<Bean> it = beans.iterator();
         Bean result = null;
-        String str = null;
         while (it.hasNext()) {
             Bean test = it.next();
-            str = convertBeanToClassName(test.getName());
-            if (str.equals(name)) {
+            if (test.getName().equals(name)) {
                 result = test;
                 break;
             }
@@ -270,10 +262,20 @@ public class Container {
      * Вернуть объект по имени класса
      * Например, Car car = (Car) container.getByClass("arhangel.dim.container.Car")
      */
+    // А несколько объектов? Следует создавать Car(по-умолчанию).
     public Object getByClass(String className) {
-        return null;
+        Iterator<Bean> it = beans.iterator();
+        Bean result = null;
+        while (it.hasNext()) {
+            Bean test = it.next();
+            if (test.getClassName().equals(className)) {
+                result = test;
+                break;
+            }
+        }
+        return getByBean(result);
     }
-
+/*
     private void instantiateBean(Bean bean) {
 
         /*
@@ -300,6 +302,6 @@ public class Container {
 
             */
 
-    }
+    //}
 
 }
