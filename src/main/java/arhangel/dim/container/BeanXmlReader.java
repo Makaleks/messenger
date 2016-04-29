@@ -1,8 +1,5 @@
 package arhangel.dim.container;
 
-/**
- * Created by Алексей on 18.03.2016.
- */
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +18,6 @@ import org.xml.sax.SAXException;
 import arhangel.dim.container.Property;
 
 class BeanXmlReader {
-
     private static final String TAG_BEAN = "bean";
     private static final String TAG_PROPERTY = "property";
     private static final String ATTR_NAME = "name";
