@@ -23,6 +23,7 @@ public class NioClient {
     private ByteBuffer buffer = allocate(16);
 
     private void run() throws Exception {
+        //сразу подключаемся
         SocketChannel channel = SocketChannel.open();
         channel.configureBlocking(false);
         Selector selector = Selector.open();
@@ -54,6 +55,7 @@ public class NioClient {
                     selectionKey.interestOps(OP_WRITE);
                 } else if (selectionKey.isReadable()) {
                     buffer.clear();
+                    //запишем ответ сервера
                     channel.read(buffer);
                     System.out.println("Recieved = " + new String(buffer.array()));
                 } else if (selectionKey.isWritable()) {
@@ -61,6 +63,7 @@ public class NioClient {
                     if (line != null) {
                         channel.write(ByteBuffer.wrap(line.getBytes()));
                     }
+                    //начали ждать сервер
                     selectionKey.interestOps(OP_READ);
                 }
             }

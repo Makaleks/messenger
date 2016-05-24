@@ -7,17 +7,21 @@ import java.util.List;
 /**
  *
  */
+//см что такое эхо-сервер
 class EchoWorker implements Runnable {
     private final List<ServerDataEvent> queue = new LinkedList<>();
 
     void processData(NioServer server, SocketChannel socket, byte[] data, int count) {
+        //мы же не хотим сохранять в список ссылку на изменяющийся буффер?
         byte[] dataCopy = new byte[count];
         System.arraycopy(data, 0, dataCopy, 0, count);
         synchronized (queue) {
+            //очередь разделяема между потоками сервера
             queue.add(new ServerDataEvent(server, socket, dataCopy));
             queue.notify();
         }
     }
+//хранитель сервера
 
     public void run() {
         ServerDataEvent dataEvent;

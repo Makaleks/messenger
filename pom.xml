@@ -28,7 +28,8 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.4.0</version>
                 <configuration>
-                    <mainClass>arhangel.dim.container.MainApp</mainClass>
+                    <!--<mainClass>arhangel.dim.container.MainApp</mainClass>-->
+                    <mainClass>arhangel.dim.client.Client</mainClass>
                     <!--<mainClass>arhangel.dim.lections.jdbc.JdbcExample</mainClass>-->
                 </configuration>
             </plugin>

@@ -180,6 +180,26 @@ public class Container {
         return beanList;
     }
 
+    private Object setParamSimple(Class clazz, String value) {
+        if (Boolean.class == clazz || Boolean.TYPE == clazz) {
+            return Boolean.parseBoolean(value);
+        } else if (Byte.class == clazz || Byte.TYPE == clazz) {
+            return Byte.parseByte(value);
+        } else if (Short.class == clazz || Short.TYPE == clazz) {
+            return Short.parseShort(value);
+        } else if (Integer.class == clazz || Integer.TYPE == clazz) {
+            return Integer.parseInt(value);
+        } else if ( Long.class == clazz || Long.TYPE == clazz ) {
+            return Long.parseLong(value);
+        } else if ( Float.class == clazz || Float.TYPE == clazz ) {
+            return Float.parseFloat(value);
+        } else if ( Double.class == clazz || Double.TYPE == clazz ) {
+            return Double.parseDouble(value);
+        } else {
+            return new String(value);
+        }
+    }
+
     private Object getByBean(Bean bean) {
         Class clazz = null;
         Object result = null;
@@ -197,27 +217,23 @@ public class Container {
         try {
             for (Map.Entry<String, Property> mapElem : propSet) {
                 if (mapElem.getValue().getType() == ValueType.REF) {
-                    Method m = clazz.getMethod(
-                            convertToSetMethod(mapElem.getValue().getName()),
-                            paramClassType
-                    );
                     clazz.getMethod(
                             convertToSetMethod(mapElem.getValue().getName()),
-                            paramClassType
-                    ).invoke(result, getByName(
-                            convertBeanToName(mapElem.getValue().getValue()))
-                    );
-                    } else {
-                        clazz.getMethod(
-                                convertToSetMethod(mapElem.getValue().getName()),
-                                paramIntType
-                        ).invoke(result, Integer.parseInt(mapElem.getValue().getValue()));
+                            clazz.getDeclaredField(mapElem.getValue().getName()).getType()
+                    ).invoke(result, getByName(mapElem.getValue().getValue()));
+                } else {
+                    clazz.getMethod(
+                            convertToSetMethod(mapElem.getValue().getName()),
+                            clazz.getDeclaredField(mapElem.getValue().getName()).getType()
+                    ).invoke(result, setParamSimple(
+                            clazz.getDeclaredField(mapElem.getValue().getName()).getType(),
+                            mapElem.getValue().getValue()
+                    ));
                 }
             }
         } catch (Exception ex) {
             System.out.println(ex.toString());
         }
-
         return result;
     }
 

@@ -63,7 +63,7 @@ public class Context {
         try {
             instantiateBeans();
         } catch (Exception e) {
-            throw new InvalidConfigurationException(e);
+            throw new InvalidConfigurationException(e.toString());
         }
     }
 
@@ -191,7 +191,7 @@ public class Context {
             DocumentBuilder db = dbf.newDocumentBuilder();
             return db.parse(file);
         } catch (Exception e) {
-            throw new InvalidConfigurationException(e);
+            throw new InvalidConfigurationException(e.toString());
         }
     }
 

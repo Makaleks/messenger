@@ -31,11 +31,14 @@ public class NioServer {
     private final Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<>();
 
     private NioServer() throws IOException {
+        //ожидает подключения
         ServerSocketChannel serverChannel = ServerSocketChannel.open();
         serverChannel.configureBlocking(false);
         InetSocketAddress isa = new InetSocketAddress(ADDRESS, PORT);
+        //создаём сокет, как на клиенте
         serverChannel.socket().bind(isa);
         selector = SelectorProvider.provider().openSelector();
+        //закончили знакомиться
         serverChannel.register(selector, OP_ACCEPT);
         new Thread(worker).start();
     }
@@ -48,17 +51,21 @@ public class NioServer {
         while (true) {
             synchronized (changeRequests) {
                 for (ChangeRequest change : changeRequests) {
+                    //есть ли запрос на изменение состояния селектора (хотим начать писать)
                     switch (change.type) {
                         case CHANGEOPS:
                             SelectionKey key = change.socket.keyFor(selector);
+                            //поменяли состояние
                             key.interestOps(change.ops);
                             break;
                         default:
                     }
                 }
+                //т.е. всех послушали и сразу всем ответли
                 changeRequests.clear();
             }
             selector.select();
+            //получить все события
             Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
             while (selectedKeys.hasNext()) {
                 SelectionKey key = selectedKeys.next();
@@ -81,6 +88,8 @@ public class NioServer {
         synchronized (changeRequests) {
             changeRequests.add(new ChangeRequest(socket, CHANGEOPS, OP_WRITE));
             synchronized (pendingData) {
+                //каждый канал порождает свою очередь => "очередь очередей"
+                //чтобы медленные каналы не тормозили быстрые
                 List<ByteBuffer> queue = pendingData.get(socket);
                 if (queue == null) {
                     queue = new ArrayList<>();

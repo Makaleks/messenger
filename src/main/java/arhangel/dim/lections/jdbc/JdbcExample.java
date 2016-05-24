@@ -3,7 +3,7 @@ package arhangel.dim.lections.jdbc;
 /**
  * Created by r.kildiev on 02.11.2015.
  */
-
+/*
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -131,9 +131,7 @@ public class JdbcExample {
 
 
 
-        /**
-         * Использование executor для запроса в базу
-         */
+
         QueryExecutor exec = new QueryExecutor();
         List<User> users = exec.execQuery(connection, "SELECT * FROM users;", (rset) -> {
             System.out.println("handle:");
@@ -149,9 +147,7 @@ public class JdbcExample {
         System.out.println(users.toString());
 
 
-        /**
-         * Использование prepared executor для запроса в базу
-         */
+
         Map<Integer, Object> prepared = new HashMap<>();
         prepared.put(1, "John");
 
@@ -177,3 +173,4 @@ public class JdbcExample {
 
 
 }
+//*/

@@ -1,6 +1,7 @@
 package arhangel.dim.core.net;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 import arhangel.dim.core.messages.Message;
 
@@ -26,6 +27,6 @@ public interface ConnectionHandler {
     /**
      * Молча (без проброса ошибок) закрываем соединение и освобождаем ресурсы
      */
-    void close();
+    void close() throws IOException, InterruptedException;
 
 }
